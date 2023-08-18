@@ -1,11 +1,4 @@
 ---
-- name: Install prerequisites
-  become: true
-  ansible.builtin.apt:  
-    name: '{{ item }}'
-    state: present
-  with_items: '{{ linux_logging_prerequisites }}'
-
 - name: Remove old data
   become: true
   file:
