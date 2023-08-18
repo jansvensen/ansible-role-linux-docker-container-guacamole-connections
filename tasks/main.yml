@@ -47,8 +47,3 @@
 - debug:
     var: docker_container_guac_connection_import_result
   tags: [never,debug]
-
-
-guac_db_name: 'guacamole'
-guac_db_user: 'guacadmin'
-guac_db_password: 'ThisIsASecurePassword!2022'
