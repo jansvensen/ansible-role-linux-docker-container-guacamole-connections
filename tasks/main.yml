@@ -33,9 +33,8 @@
 
 # Re-Add new list
 - name: docker_container guac - guac_connection_list_import {{ guac_connection_sql_file_prefix }}
-# source ./.env
   shell: |
-    
+    # source ./.env    
     /usr/bin/docker exec -i {{ docker_container_guac_db_name }} mysql -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < 'generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql'
     /usr/bin/docker exec -i {{ docker_container_guac_db_name }} mysql -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < 'generated_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql'
   args:
