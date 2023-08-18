@@ -16,20 +16,28 @@
 #  tags: [never,debug]
 
 # Generate delete list
-#- name: docker_container guac - guac_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql
-#  template:
-#    src: templates/docker_container/guac/connection_list_delete_for.sql.j2
-#    dest: "{{ docker_container_guac_volume_dir }}/generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql"
-#  tags:
-#    - always
-
-# Generate add list
-- name: docker_container guac - guac_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql
+- name: docker_container guac - guac_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql
   template:
-    src: templates/docker_container/guac/connection_list_add_for.sql.j2
-    dest: "{{ docker_container_guac_volume_dir }}/generated_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql"
+    src: templates/docker_container/guac/connection_list_delete_for.sql.j2
+    dest: "{{ docker_container_guac_volume_dir }}/generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql"
   tags:
     - always
+
+# Generate test list
+- name: docker_container guac - guac_connection_test.sql
+  template:
+    src: templates/docker_container/guac/guac_connection_test.sql.j2
+    dest: "{{ docker_container_guac_volume_dir }}/connection_list_test.sql"
+  tags:
+    - always
+
+# Generate add list
+#- name: docker_container guac - guac_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql
+#  template:
+#    src: templates/docker_container/guac/connection_list_add_for.sql.j2
+#    dest: "{{ docker_container_guac_volume_dir }}/generated_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql"
+#  tags:
+#    - always
 
 # Re-Add new list
 #- name: docker_container guac - guac_connection_list_import {{ guac_connection_sql_file_prefix }}
