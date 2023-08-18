@@ -1,30 +1,49 @@
 ---
-- name: Remove old data
-  become: true
-  file:
-    path: '{{ linux_logging_gitfolder }}'
-    state: absent
-
-- name: Create GIT folder
-  become: true
-  file:
-    path: '{{ linux_logging_gitfolder }}'
-    state: directory
-
-- name: Clone github repository
-  become: true
+# Delete previous list first
+- name: docker_container guac - guac_connection_list_delete_previous {{ guac_connection_sql_file_prefix }}
   shell: |
-    cd '{{ linux_logging_gitfolder }}'
-    git clone '{{ linux_logging_githubrepository }}'
+    source ./.env
+    if [ -f "generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql" ]; then /usr/bin/docker exec -i {{ docker_container_guac_db_name }} mysql -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < 'generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql';fi
+  args:
+    chdir: '{{ docker_container_guac_volume_dir }}'
+    executable: /bin/bash
+  register: docker_container_guac_connection_delete_result
+  tags:
+    - always
 
-- name: Stop Docker container
-  become: true
-  shell: |
-    cd '{{ linux_logging_gitfolder }}/democloud-docker-logging'
-    docker-compose rm --stop --force
+- debug:
+    var: docker_container_guac_connection_delete_result
+  tags: [never,debug]
 
-- name: Create Docker container
-  become: true
+# Generate delete list
+- name: docker_container guac - guac_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql
+  template:
+    src: templates/docker_container/guac/connection_list_delete_for.sql.j2
+    dest: "{{ docker_container_guac_volume_dir }}/generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql"
+  tags:
+    - always
+
+# Generate add list
+- name: docker_container guac - guac_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql
+  template:
+    src: templates/docker_container/guac/connection_list_add_for.sql.j2
+    dest: "{{ docker_container_guac_volume_dir }}/generated_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql"
+  tags:
+    - always
+
+# Re-Add new list
+- name: docker_container guac - guac_connection_list_import {{ guac_connection_sql_file_prefix }}
   shell: |
-    cd '{{ linux_logging_gitfolder }}/democloud-docker-logging'
-    docker-compose up -d
+    source ./.env
+    /usr/bin/docker exec -i {{ docker_container_guac_db_name }} mysql -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < 'generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql'
+    /usr/bin/docker exec -i {{ docker_container_guac_db_name }} mysql -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < 'generated_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql'
+  args:
+    chdir: '{{ docker_container_guac_volume_dir }}'
+    executable: /bin/bash
+  register: docker_container_guac_connection_import_result
+  tags:
+    - always
+
+- debug:
+    var: docker_container_guac_connection_import_result
+  tags: [never,debug]
