@@ -15,6 +15,12 @@
   tags:
     - always
 
+- name: Simple select query to acme db
+  community.mysql.mysql_query:
+    login_db: guacamole
+    query: SELECT * FROM guacamole_connections
+    login_unix_socket: /run/mysqld/mysqld.sock
+
 # Re-Add new list
 - name: Cleanup and import connections using the generated delete and add lists
   shell: |
