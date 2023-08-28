@@ -15,7 +15,7 @@
   tags:
     - always
 
-- name: Simple select query to acme db
+- name: Simple select query to guacamole database
   community.mysql.mysql_query:
     login_db: guacamole
     query: SELECT * FROM guacamole_connections
