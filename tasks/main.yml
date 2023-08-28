@@ -25,6 +25,7 @@
 
 # Re-Add new list
 - name: docker_container guac - guac_connection_list_import {{ guac_connection_sql_file_prefix }}
+  ignore_errors: true # required as mysql gives password error message
   shell: |
     source ./.env    
     /usr/bin/docker exec -i {{ docker_container_guac_db_name }} mysql -u{{ guac_db_user }} -p{{ guac_db_password }} {{ guac_db_name }} < 'generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql'
