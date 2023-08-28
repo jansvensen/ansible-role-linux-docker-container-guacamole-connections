@@ -50,7 +50,7 @@
     executable: /bin/bash
   register: docker_container_guac_connection_import_result
   tags:
-    - always#
+    - always
 
 - debug:
     var: docker_container_guac_connection_import_result
