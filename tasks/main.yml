@@ -7,16 +7,8 @@
   tags:
     - always
 
-# Generate test list
-- name: Generate test list - connection_test.sql
-  template:
-    src: templates/docker_container/guac/connection_test.sql.j2
-    dest: "{{ docker_container_guac_volume_dir }}/connection_list_test.sql"
-  tags:
-    - always
-
 # Generate add list
-- name: Generate add list - guac_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql
+- name: Generate add list
   template:
     src: templates/docker_container/guac/connection_list_add_for.sql.j2
     dest: "{{ docker_container_guac_volume_dir }}/generated_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql"
@@ -24,8 +16,8 @@
     - always
 
 # Re-Add new list
-- name: docker_container guac - guac_connection_list_import {{ guac_connection_sql_file_prefix }}
-  ignore_errors: true # required as mysql gives password error message
+- name: Cleanup and import connections using the generated delete and add lists
+  ignore_errors: true
   shell: |
     source ./.env    
     /usr/bin/docker exec -i {{ docker_container_guac_db_name }} mysql -u{{ guac_db_user }} -p{{ guac_db_password }} {{ guac_db_name }} < 'generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql'
