@@ -19,6 +19,7 @@
 - name: Cleanup and import connections using the generated delete and add lists
   ignore_errors: true
   shell: |
+    ls
     source ./.env    
     /usr/bin/docker exec -i {{ docker_container_guac_db_name }} mysql --defaults-extra-file=/tmp/mysql-config-file/my.cnf {{ guac_db_name }} < 'generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql'
     /usr/bin/docker exec -i {{ docker_container_guac_db_name }} mysql --defaults-extra-file=/tmp/mysql-config-file/my.cnf {{ guac_db_name }} < 'generated_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql'
