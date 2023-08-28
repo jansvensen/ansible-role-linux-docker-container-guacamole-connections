@@ -44,7 +44,7 @@
   shell: |
     source ./.env    
     /usr/bin/docker exec -i {{ docker_container_guac_db_name }} mysql -u {{ guac_db_user }} -p {{ guac_db_password }} {{ guac_db_name }} < 'generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql'
-    /usr/bin/docker exec -i {{ docker_container_guac_db_name }} mysql -u {{ guac_db_user }} -p {{ guac_db_password }} {{ guac_db_name }} < 'generated_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql'
+  # /usr/bin/docker exec -i {{ docker_container_guac_db_name }} mysql -u {{ guac_db_user }} -p {{ guac_db_password }} {{ guac_db_name }} < 'generated_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql'
   args:
     chdir: '{{ docker_container_guac_volume_dir }}'
     executable: /bin/bash
