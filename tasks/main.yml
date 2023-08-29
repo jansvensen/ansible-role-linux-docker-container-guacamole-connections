@@ -1,33 +1,26 @@
 ---
 # Generate delete list
-- name: Generate delete list - guac_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql
+- name: Generate delete list - guac_connection_list_delete.sql
   template:
-    src: templates/docker_container/guac/connection_list_delete_for.sql.j2
-    dest: "{{ docker_container_guac_volume_dir }}/generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql"
-  tags:
-    - always
+    src: templates/docker_container/guac/connection_list_delete.sql.j2
+    dest: "{{ docker_container_guac_volume_dir }}/generated_connection_list_delete.sql"
 
 # Generate add list
 - name: Generate add list
   template:
-    src: templates/docker_container/guac/connection_list_add_for.sql.j2
-    dest: "{{ docker_container_guac_volume_dir }}/generated_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql"
-  tags:
-    - always
+    src: templates/docker_container/guac/connection_list_add.sql.j2
+    dest: "{{ docker_container_guac_volume_dir }}/generated_connection_list_add.sql"
 
 # Re-Add new list
 - name: Cleanup and import connections using the generated delete and add lists
   shell: |
     source ./.env    
-    sudo docker exec -i {{ docker_container_guac_db_name }} mysql --defaults-extra-file=/tmp/mysql-config-file/my.cnf {{ guac_db_name }} < 'generated_connection_list_delete_for_{{ guac_connection_sql_file_prefix }}.sql'
-    sudo docker exec -i {{ docker_container_guac_db_name }} mysql --defaults-extra-file=/tmp/mysql-config-file/my.cnf {{ guac_db_name }} < 'generated_connection_list_add_for_{{ guac_connection_sql_file_prefix }}.sql'
+    sudo docker exec -i {{ docker_container_guac_db_name }} mysql --defaults-extra-file=/tmp/mysql-config-file/my.cnf {{ guac_db_name }} < 'generated_connection_list_delete.sql'
+    sudo docker exec -i {{ docker_container_guac_db_name }} mysql --defaults-extra-file=/tmp/mysql-config-file/my.cnf {{ guac_db_name }} < 'generated_connection_list_add.sql'
   args:
     chdir: '{{ docker_container_guac_volume_dir }}'
     executable: /bin/bash
   register: docker_container_guac_connection_import_result
-  tags:
-    - always
 
 - debug:
     var: docker_container_guac_connection_import_result
-  tags: [never,debug]
